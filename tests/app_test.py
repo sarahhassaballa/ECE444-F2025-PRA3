@@ -80,3 +80,17 @@ def test_delete_message(client):
     rv = client.get('/delete/1')
     data = json.loads(rv.data)
     assert data["status"] == 1
+
+def test_search_with_matching_post(client):
+    from project.app import db
+    from project.models import Post
+
+    # Add a post to the test database
+    post = Post(title="Test Title", text="Some test content")
+    db.session.add(post)
+    db.session.commit()
+
+    # Search for it
+    response = client.get('/search/?query=test')
+    assert response.status_code == 200
+    assert b'Test Title' in response.data
