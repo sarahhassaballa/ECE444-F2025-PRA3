@@ -1,5 +1,5 @@
-import os
-import pytest, json
+import pytest
+import json
 from pathlib import Path
 
 from project.app import app, db
@@ -75,6 +75,7 @@ def test_messages(client):
     assert b"&lt;Hello&gt;" in rv.data
     assert b"<strong>HTML</strong> allowed here" in rv.data
 
+
 def test_delete_message(client):
     """Ensure the messages are being deleted"""
     rv = client.get("/delete/1")
@@ -84,6 +85,7 @@ def test_delete_message(client):
     rv = client.get("/delete/1")
     data = json.loads(rv.data)
     assert data["status"] == 1
+
 
 def test_search_with_matching_post(client):
     from project.app import db
@@ -95,12 +97,13 @@ def test_search_with_matching_post(client):
     db.session.commit()
 
     # Search for it
-    response = client.get('/search/?query=test')
+    response = client.get("/search/?query=test")
     assert response.status_code == 200
-    assert b'Test Title' in response.data
+    assert b"Test Title" in response.data
+
 
 def test_login_required_protection(client):
     # Try accessing a protected route without being logged in
-    response = client.get('/delete/1')  # or any route decorated with @login_required
+    response = client.get("/delete/1")  # or any route decorated with @login_required
     assert response.status_code == 401
-    assert b'Please log in.' in response.data
+    assert b"Please log in." in response.data
